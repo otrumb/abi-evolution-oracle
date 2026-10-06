@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CGO_ENABLED: "0"
+  GOTOOLCHAIN: local
+
+jobs:
+  validate-ubuntu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: 1.24.0
+          cache: true
+      - name: Format
+        run: test -z "$(gofmt -l .)"
+      - run: go mod verify
+      - run: go test -shuffle=on -count=1 ./...
+      - run: go vet ./...
+      - run: go build -trimpath ./cmd/abi-evolution-oracle
+      - run: go run ./cmd/abi-evolution-oracle verify-corpus
+      - run: go run ./cmd/abi-evolution-oracle score evidence evidence/gates.json
+      - run: git diff --exit-code -- evidence/score.json
+
+  validate-windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: 1.24.0
+          cache: true
+      - name: Format
+        shell: pwsh
+        run: |
+          $files = gofmt -l .
+          if ($files) { Write-Error "Unformatted files:`n$files" }
+      - run: go mod verify
+      - run: go test -shuffle=on -count=1 ./...
+      - run: go vet ./...
+      - run: go build -trimpath ./cmd/abi-evolution-oracle
+      - run: go run ./cmd/abi-evolution-oracle verify-corpus
+      - run: go run ./cmd/abi-evolution-oracle score evidence evidence/gates.json
+      - run: git diff --exit-code -- evidence/score.json
+
+  replay-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: 1.24.0
+          cache: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.16.0
+      - name: Build pinned abigen
+        run: go build -trimpath -o "$RUNNER_TEMP/abigen" github.com/ethereum/go-ethereum/cmd/abigen
+      - name: Check out pinned abidiff
+        run: |
+          git clone --no-checkout https://github.com/jay-tank/abidiff.git "$RUNNER_TEMP/abidiff"
+          git -C "$RUNNER_TEMP/abidiff" checkout c9488370c95cd0f9406d3fbec6aa26cc95c1f3b6
+          test "$(git -C "$RUNNER_TEMP/abidiff" rev-parse HEAD)" = c9488370c95cd0f9406d3fbec6aa26cc95c1f3b6
+      - name: Replay frozen evidence
+        run: go run ./cmd/abi-evolution-oracle run "$RUNNER_TEMP/evidence" "$RUNNER_TEMP/abidiff/src/cli.js" "$RUNNER_TEMP/abigen"
+      - name: Compare deterministic evidence
+        run: |
+          cmp evidence/observations.jsonl "$RUNNER_TEMP/evidence/observations.jsonl"
+          cmp evidence/abidiff.jsonl "$RUNNER_TEMP/evidence/abidiff.jsonl"
