@@ -20,36 +20,64 @@ type Observation struct {
 	ArbitraryWinner bool       `json:"arbitrary_winner,omitempty"`
 }
 type Baseline struct {
-	FixtureID          string               `json:"fixture_id"`
-	ExitCode           int                  `json:"exit_code"`
-	Bump               string               `json:"bump"`
-	Breaking           int                  `json:"breaking"`
-	Additions          int                  `json:"additions"`
-	Capabilities       BaselineCapabilities `json:"capabilities"`
-	CapabilitiesParsed bool                 `json:"capabilities_parsed"`
+	FixtureID    string               `json:"fixture_id"`
+	ExitCode     int                  `json:"exit_code"`
+	Bump         string               `json:"bump"`
+	Breaking     int                  `json:"breaking"`
+	Additions    int                  `json:"additions"`
+	OutputParsed bool                 `json:"output_parsed"`
+	Sources      []BaselineSource     `json:"sources"`
+	Capabilities BaselineCapabilities `json:"capabilities"`
 }
 type BaselineCapabilities struct {
-	CallIdentityUnchanged        bool `json:"call_identity_unchanged"`
-	OldConsumerNewProducerDecode bool `json:"old_consumer_new_producer_decode"`
-	NewConsumerOldProducerDecode bool `json:"new_consumer_old_producer_decode"`
-	WireIdentityUnchanged        bool `json:"wire_identity_unchanged"`
-	GeneratedAPIImpact           bool `json:"generated_api_impact"`
-	SourceCompileImpact          bool `json:"source_compile_impact"`
-	TopicIdentity                bool `json:"topic_identity"`
-	TopicLayoutImpact            bool `json:"topic_layout_impact"`
-	DataLayoutImpact             bool `json:"data_layout_impact"`
-	FilterImpact                 bool `json:"filter_impact"`
-	CrossDecodeImpact            bool `json:"cross_decode_impact"`
+	Facts []BaselineFact `json:"facts"`
+}
+
+type BaselineSource struct {
+	Section   string `json:"section"`
+	Index     int    `json:"index"`
+	Kind      string `json:"kind"`
+	Signature string `json:"signature"`
+	Message   string `json:"message"`
+}
+
+type BaselineFact struct {
+	Name   string `json:"name"`
+	Value  bool   `json:"value"`
+	Source int    `json:"source"`
 }
 
 func (value BaselineCapabilities) DirectionalEquivalent() bool {
-	return value.CallIdentityUnchanged && value.OldConsumerNewProducerDecode && value.NewConsumerOldProducerDecode
+	return value.value("call_identity_unchanged") && value.value("old_consumer_new_producer_decode") && value.value("new_consumer_old_producer_decode")
 }
 func (value BaselineCapabilities) NamesEquivalent() bool {
-	return value.WireIdentityUnchanged && value.GeneratedAPIImpact && value.SourceCompileImpact
+	return value.value("wire_identity_unchanged") && value.value("generated_api_impact") && value.value("source_compile_impact")
 }
 func (value BaselineCapabilities) EventsEquivalent() bool {
-	return value.TopicIdentity && value.TopicLayoutImpact && value.DataLayoutImpact && value.FilterImpact && value.CrossDecodeImpact
+	return value.value("topic_identity") && value.value("topic_layout_impact") && value.value("data_layout_impact") && value.value("filter_impact") && value.value("cross_decode_impact")
+}
+func (value BaselineCapabilities) supported(names ...string) bool {
+	for _, name := range names {
+		found := false
+		for _, fact := range value.Facts {
+			if fact.Name == name {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
+}
+func (value BaselineCapabilities) value(name string) bool {
+	for _, fact := range value.Facts {
+		if fact.Name == name && fact.Value {
+			return true
+		}
+	}
+	return false
 }
 
 type Summary struct {
