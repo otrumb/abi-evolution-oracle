@@ -1,8 +1,8 @@
 # Final Verdict
 
-**TECHNICAL GO, PUBLICATION LOCKED**
+**TECHNICAL NO-GO, PUBLICATION LOCKED**
 
-Score: 100/100. Threshold: 85/100. Hard-gate failures: none.
+Score: 90/100. Threshold: 85/100. Hard-gate failure: `baseline_differentiation`.
 
 ## Executed results
 
@@ -15,8 +15,12 @@ Score: 100/100. Threshold: 85/100. Hard-gate failures: none.
 - Full determinism: two runs byte-identical.
 - Fresh-process stability: D06, N03, E07, C01, S06 each 30/30 identical.
 
-Directional, names, and events beat admitted baseline by adding direction-specific decode,
-generated-source compilation, and filter/topic/data consequences respectively.
+Pinned output parsed strictly for all 50 comparisons. Exact supported facts derive only
+from typed entries: function output/state-mutability changes establish call identity;
+event indexed-layout changes establish topic identity, topic/data layout impact, and
+cross-decode impact. No entry establishes directional decode, generated API, source
+compile, or filter outcomes. Therefore no class has a complete supported baseline fact
+set, zero classes can be credited as beating baseline, and technical verdict is NO-GO.
 
 ## Assessed scope
 

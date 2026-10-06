@@ -1,12 +1,10 @@
 {
-  "score": 100,
-  "technical_verdict": "GO",
-  "classes_beating_baseline": [
-    "directional",
-    "events",
-    "names"
+  "score": 90,
+  "technical_verdict": "NO-GO",
+  "classes_beating_baseline": [],
+  "hard_gate_failures": [
+    "baseline_differentiation"
   ],
-  "hard_gate_failures": [],
   "sections": {
     "consumer_evidence": {
       "earned": 40,
@@ -19,7 +17,7 @@
       "minimum": 10
     },
     "baseline_differentiation": {
-      "earned": 20,
+      "earned": 10,
       "available": 20,
       "minimum": 10
     },
