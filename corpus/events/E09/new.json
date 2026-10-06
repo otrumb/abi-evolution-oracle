@@ -1,0 +1,1 @@
+[{"type":"event","name":"Observed","anonymous":true,"inputs":[{"name":"value","type":"uint256","indexed":true}]}]

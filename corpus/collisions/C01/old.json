@@ -1,0 +1,1 @@
+[{"type":"function","name":"burn","stateMutability":"nonpayable","inputs":[{"name":"value","type":"uint256"}],"outputs":[]}]

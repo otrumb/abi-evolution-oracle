@@ -1,0 +1,10 @@
+{
+  "assessment": {
+    "deployment_compatibility": "unknown",
+    "runtime_behavior": "not_assessed",
+    "security": "not_assessed",
+    "storage_compatibility": "not_assessed"
+  },
+  "change": "candidate ambiguity",
+  "id": "C03"
+}

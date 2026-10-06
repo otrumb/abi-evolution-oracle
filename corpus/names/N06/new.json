@@ -1,0 +1,1 @@
+[{"type":"function","name":"probe","stateMutability":"view","inputs":[],"outputs":[{"name":"result","type":"tuple","components":[{"name":"newField6","type":"uint256"}]}]}]
