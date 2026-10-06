@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 )
 
@@ -52,7 +53,7 @@ func verifyChecksums(dist string) error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		fields := strings.Fields(scanner.Text())
-		if len(fields) != 2 || !contains(archives, fields[1]) || found[fields[1]] {
+		if len(fields) != 2 || !slices.Contains(archives, fields[1]) || found[fields[1]] {
 			return fmt.Errorf("invalid checksum entry %q", scanner.Text())
 		}
 		expected, err := hex.DecodeString(fields[0])
@@ -197,15 +198,6 @@ func smokeBinary(path, archive string) error {
 		return fmt.Errorf("native smoke failed for %s: %s", archive, output)
 	}
 	return nil
-}
-
-func contains(values []string, candidate string) bool {
-	for _, value := range values {
-		if value == candidate {
-			return true
-		}
-	}
-	return false
 }
 
 func equal(left, right []byte) bool {
