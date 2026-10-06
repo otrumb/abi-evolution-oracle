@@ -63,6 +63,7 @@ func Verify(root string) (Summary, error) {
 	}
 	sort.Slice(entries, func(i, j int) bool { return entries[i].ID < entries[j].ID })
 	seen := make(map[string]bool, len(entries))
+	pairs := make(map[string]string, len(entries))
 	summary := Summary{Total: len(entries)}
 	for _, entry := range entries {
 		if seen[entry.ID] {
@@ -72,6 +73,16 @@ func Verify(root string) (Summary, error) {
 		if entry.License != "CC0-1.0" || entry.Origin != "original" || len(entry.Expected) == 0 {
 			return Summary{}, fmt.Errorf("invalid provenance or expectation for %s", entry.ID)
 		}
+		for _, key := range requiredExpectations(entry.Class) {
+			if _, ok := entry.Expected[key]; !ok {
+				return Summary{}, fmt.Errorf("missing expectation %s for %s", key, entry.ID)
+			}
+		}
+		pair := entry.Hashes.Old + ":" + entry.Hashes.New
+		if previous, ok := pairs[pair]; ok {
+			return Summary{}, fmt.Errorf("duplicate fixture bytes %s and %s", previous, entry.ID)
+		}
+		pairs[pair] = entry.ID
 		for path, want := range map[string]string{entry.Old: entry.Hashes.Old, entry.New: entry.Hashes.New, entry.Probe: entry.Hashes.Probe} {
 			if filepath.IsAbs(path) || strings.Contains(path, "..") {
 				return Summary{}, fmt.Errorf("unsafe path for %s", entry.ID)
@@ -104,4 +115,30 @@ func Verify(root string) (Summary, error) {
 		return Summary{}, fmt.Errorf("wrong corpus split: %+v", summary)
 	}
 	return summary, nil
+}
+
+func requiredExpectations(class string) []string {
+	switch class {
+	case "directional":
+		return []string{"selector_invariant", "decode_both_directions", "consumer_observation"}
+	case "names":
+		return []string{"wire_invariant", "signature_invariant", "generated_source_change", "old_consumer_compile_break"}
+	case "events":
+		return []string{"synthetic_log", "cross_version_filter", "cross_version_decode"}
+	case "collisions":
+		return []string{"candidate_set_preserved", "ambiguity_expected", "no_arbitrary_winner"}
+	case "structural":
+		return nil
+	default:
+		return []string{"unknown_class"}
+	}
+}
+
+func ValidateExpectations(class string, values map[string]bool) error {
+	for _, key := range requiredExpectations(class) {
+		if _, ok := values[key]; !ok {
+			return fmt.Errorf("missing expectation %s", key)
+		}
+	}
+	return nil
 }
