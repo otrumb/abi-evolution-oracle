@@ -1,0 +1,10 @@
+{
+  "commit": "c9488370c95cd0f9406d3fbec6aa26cc95c1f3b6",
+  "license": "MIT",
+  "status": "admitted",
+  "tests": {
+    "failed": 0,
+    "passed": 9
+  },
+  "tool": "jay-tank/abidiff"
+}

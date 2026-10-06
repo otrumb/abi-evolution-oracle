@@ -1,0 +1,7 @@
+{
+  "abidiff_commit": "c9488370c95cd0f9406d3fbec6aa26cc95c1f3b6",
+  "abigen_module": "github.com/ethereum/go-ethereum v1.15.11",
+  "cgo_enabled": "0",
+  "go": "go1.24.0 windows/amd64",
+  "node": "v24.16.0"
+}

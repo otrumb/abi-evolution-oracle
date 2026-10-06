@@ -1,0 +1,21 @@
+{
+  "forbidden_now": [
+    "create_remote",
+    "push",
+    "publish",
+    "contact_maintainer",
+    "open_issue",
+    "open_pull_request",
+    "claim_adoption"
+  ],
+  "git_remote_required": false,
+  "maintainer_gate": {
+    "named_maintainers": [],
+    "required_count": 3,
+    "user_approval": "not_requested"
+  },
+  "outreach_performed": false,
+  "repository_visibility": "local_only",
+  "schema": 1,
+  "state": "locked"
+}
