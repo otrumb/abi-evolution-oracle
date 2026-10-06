@@ -70,15 +70,16 @@ commit above. Its CLI entry point is `src/cli.js` and needs Node 18 or newer.
 
 ```bash
 GOTOOLCHAIN=local CGO_ENABLED=0 go build -trimpath -o .tools/abigen github.com/ethereum/go-ethereum/cmd/abigen
+git clone --no-checkout https://github.com/jay-tank/abidiff.git .tools/abidiff
 git -C .tools/abidiff checkout c9488370c95cd0f9406d3fbec6aa26cc95c1f3b6
 node .tools/abidiff/src/cli.js --help
 go run ./cmd/abi-evolution-oracle run evidence-replay .tools/abidiff/src/cli.js .tools/abigen
 go run ./cmd/abi-evolution-oracle score evidence evidence/gates.json
 ```
 
-On Windows, use `.exe` for the `abigen` output and pass a command wrapper for
-the Node CLI. CI performs bounded full baseline replay on Ubuntu only. No live
-RPC, credentials, provider allowlist, or chain allowlist is used.
+On Windows, use `.exe` for the `abigen` output. CI performs bounded full
+baseline replay on Ubuntu only. No live RPC, credentials, provider allowlist,
+or chain allowlist is used.
 
 See [`evidence/final-verdict.md`](evidence/final-verdict.md),
 [`docs/tdd-evidence.md`](docs/tdd-evidence.md), and
