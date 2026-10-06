@@ -1,1 +1,1 @@
-[{"type":"event","name":"Observed","anonymous":true,"inputs":[{"name":"value","type":"uint256","indexed":true}]}]
+[{"type":"event","name":"Observed","anonymous":true,"inputs":[{"name":"a","type":"uint256","indexed":true},{"name":"b","type":"uint256","indexed":true},{"name":"c","type":"uint256","indexed":false},{"name":"d","type":"uint256","indexed":false}]}]

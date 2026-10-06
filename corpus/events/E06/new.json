@@ -1,1 +1,1 @@
-[{"type":"event","name":"Observed","anonymous":false,"inputs":[{"name":"value","type":"bytes","indexed":false}]}]
+[{"type":"event","name":"Observed","anonymous":false,"inputs":[{"name":"data","type":"bytes","indexed":false}]}]
