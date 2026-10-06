@@ -124,7 +124,7 @@ func requiredExpectations(class string) []string {
 	case "names":
 		return []string{"wire_invariant", "signature_invariant", "generated_source_change", "old_consumer_compile_break"}
 	case "events":
-		return []string{"synthetic_log", "cross_version_filter", "cross_version_decode"}
+		return []string{"synthetic_log", "cross_version_filter", "cross_version_decode", "layout_changed", "consumer_impact"}
 	case "collisions":
 		return []string{"candidate_set_preserved", "ambiguity_expected", "no_arbitrary_winner"}
 	case "structural":

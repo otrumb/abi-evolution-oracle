@@ -2,8 +2,10 @@
   "id": "E05",
   "scenario": "dynamic_string_becomes_indexed",
   "expected_observations": {
+    "consumer_impact": true,
     "cross_version_decode": true,
     "cross_version_filter": true,
+    "layout_changed": true,
     "synthetic_log": true
   },
   "assessment": {

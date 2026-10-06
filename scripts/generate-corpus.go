@@ -162,7 +162,7 @@ func nameExpected(compileBreak bool) map[string]bool {
 	return result
 }
 func eventExpected() map[string]bool {
-	return expected("synthetic_log", "cross_version_filter", "cross_version_decode")
+	return expected("synthetic_log", "cross_version_filter", "cross_version_decode", "layout_changed", "consumer_impact")
 }
 func collisionExpected() map[string]bool {
 	return expected("candidate_set_preserved", "ambiguity_expected", "no_arbitrary_winner")

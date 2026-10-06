@@ -15,8 +15,27 @@ func eventObservation(entry corpus.Entry, oldABI, newABI ethabi.ABI) Observation
 	newTopics, newData := syntheticLog(newEvent)
 	oldNewErr := decodeEvent(oldEvent, newTopics, newData)
 	newOldErr := decodeEvent(newEvent, oldTopics, oldData)
-	detail := fmt.Sprintf("old_topics=%d;new_topics=%d;old_data=%d;new_data=%d;filter_equal=%t;old_new_error=%t;new_old_error=%t", len(oldTopics), len(newTopics), len(oldData), len(newData), len(oldTopics) > 0 && len(newTopics) > 0 && oldTopics[0] == newTopics[0], oldNewErr != nil, newOldErr != nil)
-	return Observation{entry.ID, entry.Class, "go-ethereum_v1.15.11_event", "observed", detail, scope()}
+	filterEqual := len(oldTopics) > 0 && len(newTopics) > 0 && oldTopics[0] == newTopics[0]
+	layoutChanged := len(oldTopics) != len(newTopics) || len(oldData) != len(newData) || !filterEqual || indexedLayoutDiffers(oldEvent, newEvent)
+	consumerImpact := layoutChanged || oldNewErr != nil || newOldErr != nil
+	status := "observed"
+	if layoutChanged != entry.Expected["layout_changed"] || consumerImpact != entry.Expected["consumer_impact"] {
+		status = "rejected"
+	}
+	detail := fmt.Sprintf("old_topics=%d;new_topics=%d;old_data=%d;new_data=%d;filter_equal=%t;old_new_error=%t;new_old_error=%t;layout_changed=%t;consumer_impact=%t", len(oldTopics), len(newTopics), len(oldData), len(newData), filterEqual, oldNewErr != nil, newOldErr != nil, layoutChanged, consumerImpact)
+	return Observation{FixtureID: entry.ID, Class: entry.Class, Probe: "go-ethereum_v1.15.11_event", Status: status, Detail: detail, Assessment: scope(), Actionable: consumerImpact}
+}
+
+func indexedLayoutDiffers(oldEvent, newEvent ethabi.Event) bool {
+	if oldEvent.Anonymous != newEvent.Anonymous || len(oldEvent.Inputs) != len(newEvent.Inputs) {
+		return true
+	}
+	for index := range oldEvent.Inputs {
+		if oldEvent.Inputs[index].Indexed != newEvent.Inputs[index].Indexed || oldEvent.Inputs[index].Type.String() != newEvent.Inputs[index].Type.String() {
+			return true
+		}
+	}
+	return false
 }
 
 func decodeEvent(event ethabi.Event, topics []common.Hash, data []byte) error {

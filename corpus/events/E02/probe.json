@@ -2,8 +2,10 @@
   "id": "E02",
   "scenario": "scalar_indexed_to_nonindexed",
   "expected_observations": {
+    "consumer_impact": true,
     "cross_version_decode": true,
     "cross_version_filter": true,
+    "layout_changed": true,
     "synthetic_log": true
   },
   "assessment": {
