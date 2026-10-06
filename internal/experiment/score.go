@@ -126,26 +126,43 @@ func scopesPass(values []Observation) bool {
 	return true
 }
 func classWins(classes map[string][]Observation, baselines map[string]Baseline) []string {
-	var wins []string
+	wins := []string{}
 	for _, class := range []string{"directional", "names", "events"} {
 		values := classes[class]
 		if !classPasses(values, 12, "observed") {
 			continue
 		}
+		comparable := true
 		equivalent := false
 		for _, value := range values {
 			baseline, ok := baselines[value.FixtureID]
-			if !ok || !baseline.CapabilitiesParsed || baselineEquivalent(class, baseline.Capabilities) {
+			if !ok || !baseline.OutputParsed || !baselineSupported(class, baseline.Capabilities) {
+				comparable = false
+				break
+			}
+			if baselineEquivalent(class, baseline.Capabilities) {
 				equivalent = true
 				break
 			}
 		}
-		if !equivalent {
+		if comparable && !equivalent {
 			wins = append(wins, class)
 		}
 	}
 	sort.Strings(wins)
 	return wins
+}
+func baselineSupported(class string, capabilities BaselineCapabilities) bool {
+	switch class {
+	case "directional":
+		return capabilities.supported("call_identity_unchanged", "old_consumer_new_producer_decode", "new_consumer_old_producer_decode")
+	case "names":
+		return capabilities.supported("wire_identity_unchanged", "generated_api_impact", "source_compile_impact")
+	case "events":
+		return capabilities.supported("topic_identity", "topic_layout_impact", "data_layout_impact", "filter_impact", "cross_decode_impact")
+	default:
+		return false
+	}
 }
 func baselineEquivalent(class string, capabilities BaselineCapabilities) bool {
 	switch class {
@@ -168,7 +185,7 @@ func hardFailures(evidence ScoringEvidence, sections ScoreSections, wins []strin
 		failures = append(failures, "mandatory_baseline_execution")
 	}
 	for _, baseline := range evidence.Baselines {
-		if !baseline.CapabilitiesParsed {
+		if !baseline.OutputParsed {
 			failures = append(failures, "baseline_capability_parse")
 			break
 		}
