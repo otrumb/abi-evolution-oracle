@@ -1,4 +1,5 @@
 *.exe
 .tools/
+dist/
 tmp/
 evidence-run-*/
