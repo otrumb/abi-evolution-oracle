@@ -39,3 +39,15 @@ GREEN: strict parsing rejects malformed/missing output shape, persists capabilit
 and removes only classes whose complete frozen equivalence fact set is present. Setting
 all fact sets true produces zero wins and NO-GO. Actual pinned output yields zero
 equivalent records for directional, names, and events.
+
+## FR-002 Repair RED/GREEN
+
+RED: actual upstream output without synthetic `consumer_facts` became eleven false
+values while `capabilities_parsed=true`. Parser accepted unknown and trailing JSON and
+could not preserve source provenance or distinguish unsupported facts from false facts.
+
+GREEN: strict typed decoding requires `breaking`, `additions`, `notes`, `bump`, and
+non-empty `kind`, `signature`, `message` on every entry; unknown fields and trailing JSON
+reject. Ordered source records persist separately from exact supported fact records.
+Scoring requires parsed output and complete class fact support, so missing evidence earns
+no baseline win. Pinned output parses 50/50 and now yields zero wins and NO-GO.
