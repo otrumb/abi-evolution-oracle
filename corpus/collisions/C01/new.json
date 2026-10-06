@@ -1,1 +1,1 @@
-[{"type":"function","name":"collate_propagate_storage","stateMutability":"nonpayable","inputs":[{"name":"value","type":"bytes16"}],"outputs":[]}]
+[{"type":"function","name":"collate_propagate_storage","stateMutability":"view","inputs":[{"name":"value","type":"bytes16"}],"outputs":[]}]

@@ -1,10 +1,15 @@
 {
-  "assessment": {
-    "deployment_compatibility": "unknown",
-    "runtime_behavior": "not_assessed",
-    "security": "not_assessed",
-    "storage_compatibility": "not_assessed"
+  "id": "C03",
+  "scenario": "overloaded_function_name",
+  "expected_observations": {
+    "ambiguity_expected": true,
+    "candidate_set_preserved": true,
+    "no_arbitrary_winner": true
   },
-  "change": "candidate ambiguity",
-  "id": "C03"
+  "assessment": {
+    "runtime_behavior": "not_assessed",
+    "storage_compatibility": "not_assessed",
+    "security": "not_assessed",
+    "deployment_compatibility": "unknown"
+  }
 }

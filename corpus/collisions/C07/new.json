@@ -1,1 +1,1 @@
-[{"type":"function","name":"probe","stateMutability":"view","inputs":[],"outputs":[{"name":"value","type":"bytes32"}]}]
+[{"type":"function","name":"fooBar","stateMutability":"view","inputs":[],"outputs":[]}]
