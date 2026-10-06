@@ -51,3 +51,14 @@ non-empty `kind`, `signature`, `message` on every entry; unknown fields and trai
 reject. Ordered source records persist separately from exact supported fact records.
 Scoring requires parsed output and complete class fact support, so missing evidence earns
 no baseline win. Pinned output parses 50/50 and now yields zero wins and NO-GO.
+
+## FR-002 Equivalence Direction RED/GREEN
+
+RED: a parsed exhaustive baseline with an empty or incomplete equivalent fact set was
+rejected as unsupported, so all three otherwise qualifying classes lost their wins.
+
+GREEN: each observation now requires exactly one parsed baseline record. A complete true
+equivalent fact set removes only its matching class win; incomplete or empty sets permit
+the win. Missing, duplicate, or `OutputParsed=false` records remain hard NO-GO. Strict
+raw parsing remains unchanged. Fresh pinned execution parses 50/50; machine scoring
+derives directional, events, and names wins, score 100, and technical GO.

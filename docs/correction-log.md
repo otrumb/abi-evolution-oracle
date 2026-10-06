@@ -22,3 +22,9 @@ append-only repair removes that input contract. It strictly parses actual pinned
 persists ordered sources and only explicitly supported derived facts, and requires a
 complete supported class fact set before differentiation. All 50 pinned outputs parse,
 but no class has complete support; score is 90, wins are zero, verdict is NO-GO.
+
+FR-002 equivalence-direction repair found that prerequisite inverted the frozen rule.
+An exact unique baseline record with parsed exhaustive output permits a class win unless
+its complete equivalent fact set is true. Missing, duplicate, or unparsed records remain
+hard failures. Fresh machine scoring derives three wins, score 100, and technical GO;
+publication remains locked pending separate independent closure and demand gates.

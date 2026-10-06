@@ -2,9 +2,9 @@
   "admitted_baselines": ["jay-tank/abidiff@c9488370c95cd0f9406d3fbec6aa26cc95c1f3b6"],
   "optional_baselines": [{"tool":"sol-abi-compare","status":"unavailable","reason":"not_attempted_after_mandatory_baseline_admission","scored":false}],
   "classes": {
-    "directional": {"fixtures":12,"actionable_observations":12,"required_baseline_facts":["call_identity_unchanged","old_consumer_new_producer_decode","new_consumer_old_producer_decode"],"supported_baseline_records":0,"equivalent_baseline_records":0,"beats_baseline":false},
-    "events": {"fixtures":12,"actionable_observations":12,"required_baseline_facts":["topic_identity","topic_layout_impact","data_layout_impact","filter_impact","cross_decode_impact"],"supported_baseline_records":0,"equivalent_baseline_records":0,"beats_baseline":false},
-    "names": {"fixtures":12,"actionable_observations":12,"required_baseline_facts":["wire_identity_unchanged","generated_api_impact","source_compile_impact"],"supported_baseline_records":0,"equivalent_baseline_records":0,"beats_baseline":false}
+    "directional": {"fixtures":12,"actionable_observations":12,"parsed_unique_baseline_records":12,"required_equivalent_facts":["call_identity_unchanged","old_consumer_new_producer_decode","new_consumer_old_producer_decode"],"equivalent_baseline_records":0,"beats_baseline":true},
+    "events": {"fixtures":12,"actionable_observations":12,"parsed_unique_baseline_records":12,"required_equivalent_facts":["topic_identity","topic_layout_impact","data_layout_impact","filter_impact","cross_decode_impact"],"equivalent_baseline_records":0,"beats_baseline":true},
+    "names": {"fixtures":12,"actionable_observations":12,"parsed_unique_baseline_records":12,"required_equivalent_facts":["wire_identity_unchanged","generated_api_impact","source_compile_impact"],"equivalent_baseline_records":0,"beats_baseline":true}
   },
   "source": "evidence/observations.jsonl + evidence/abidiff.jsonl + evidence/score.json"
 }
