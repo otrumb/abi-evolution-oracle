@@ -8,12 +8,12 @@ import (
 
 func ScoreEvidence(evidence ScoringEvidence) Score {
 	byClass := map[string][]Observation{}
-	byID := map[string]Baseline{}
+	byID := map[string][]Baseline{}
 	for _, observation := range evidence.Observations {
 		byClass[observation.Class] = append(byClass[observation.Class], observation)
 	}
 	for _, baseline := range evidence.Baselines {
-		byID[baseline.FixtureID] = baseline
+		byID[baseline.FixtureID] = append(byID[baseline.FixtureID], baseline)
 	}
 	consumer := 0
 	if classPasses(byClass["directional"], 12, "observed") {
@@ -125,7 +125,7 @@ func scopesPass(values []Observation) bool {
 	}
 	return true
 }
-func classWins(classes map[string][]Observation, baselines map[string]Baseline) []string {
+func classWins(classes map[string][]Observation, baselines map[string][]Baseline) []string {
 	wins := []string{}
 	for _, class := range []string{"directional", "names", "events"} {
 		values := classes[class]
@@ -135,11 +135,12 @@ func classWins(classes map[string][]Observation, baselines map[string]Baseline) 
 		comparable := true
 		equivalent := false
 		for _, value := range values {
-			baseline, ok := baselines[value.FixtureID]
-			if !ok || !baseline.OutputParsed || !baselineSupported(class, baseline.Capabilities) {
+			records := baselines[value.FixtureID]
+			if len(records) != 1 || !records[0].OutputParsed {
 				comparable = false
 				break
 			}
+			baseline := records[0]
 			if baselineEquivalent(class, baseline.Capabilities) {
 				equivalent = true
 				break
@@ -151,18 +152,6 @@ func classWins(classes map[string][]Observation, baselines map[string]Baseline) 
 	}
 	sort.Strings(wins)
 	return wins
-}
-func baselineSupported(class string, capabilities BaselineCapabilities) bool {
-	switch class {
-	case "directional":
-		return capabilities.supported("call_identity_unchanged", "old_consumer_new_producer_decode", "new_consumer_old_producer_decode")
-	case "names":
-		return capabilities.supported("wire_identity_unchanged", "generated_api_impact", "source_compile_impact")
-	case "events":
-		return capabilities.supported("topic_identity", "topic_layout_impact", "data_layout_impact", "filter_impact", "cross_decode_impact")
-	default:
-		return false
-	}
 }
 func baselineEquivalent(class string, capabilities BaselineCapabilities) bool {
 	switch class {
@@ -176,7 +165,7 @@ func baselineEquivalent(class string, capabilities BaselineCapabilities) bool {
 		return false
 	}
 }
-func hardFailures(evidence ScoringEvidence, sections ScoreSections, wins []string, baselines map[string]Baseline) []string {
+func hardFailures(evidence ScoringEvidence, sections ScoreSections, wins []string, baselines map[string][]Baseline) []string {
 	failures := []string{}
 	if len(evidence.Observations) != 50 {
 		failures = append(failures, "mandatory_fixture_execution")

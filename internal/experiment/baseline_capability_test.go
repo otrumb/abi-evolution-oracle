@@ -8,7 +8,18 @@ import (
 
 func Test_ParseBaselineOutput_derives_only_supported_function_facts(t *testing.T) {
 	// Given
-	raw := []byte(`{"breaking":[{"kind":"function","signature":"probe()","message":"return type changed (uint256 -> bytes)"}],"additions":[],"notes":[{"kind":"function","signature":"probe()","message":"stateMutability changed (view -> pure)"}],"bump":"major"}`)
+	raw := []byte(`{
+  "breaking": [
+    {
+      "kind": "function",
+      "signature": "probe()",
+      "message": "return type changed (uint256 -> bytes)"
+    }
+  ],
+  "additions": [],
+  "notes": [],
+  "bump": "major"
+}`)
 	// When
 	parsed, err := parseBaselineOutput("D06", raw)
 	// Then
@@ -16,7 +27,6 @@ func Test_ParseBaselineOutput_derives_only_supported_function_facts(t *testing.T
 	require.True(t, parsed.OutputParsed)
 	require.Equal(t, []BaselineSource{
 		{Section: "breaking", Index: 0, Kind: "function", Signature: "probe()", Message: "return type changed (uint256 -> bytes)"},
-		{Section: "notes", Index: 0, Kind: "function", Signature: "probe()", Message: "stateMutability changed (view -> pure)"},
 	}, parsed.Sources)
 	require.Equal(t, []BaselineFact{{Name: "call_identity_unchanged", Value: true, Source: 0}}, parsed.Capabilities.Facts)
 	require.False(t, parsed.Capabilities.DirectionalEquivalent())

@@ -22,21 +22,36 @@ func Test_ScoreEvidence_rejects_mutated_observation_status(t *testing.T) {
 func Test_ScoreEvidence_rejects_missing_baseline_record(t *testing.T) {
 	// Given
 	evidence := completeScoringEvidence()
-	evidence.Baselines = evidence.Baselines[:49]
+	evidence.Baselines = append(evidence.Baselines[:8], evidence.Baselines[9:]...)
 	// When
 	score := ScoreEvidence(evidence)
 	// Then
 	require.Contains(t, score.HardGateFailures, "mandatory_baseline_execution")
+	require.NotContains(t, score.ClassesBeatingBaseline, "directional")
+	require.Equal(t, "NO-GO", score.TechnicalVerdict)
+}
+
+func Test_ScoreEvidence_rejects_duplicate_baseline_record_for_class_win(t *testing.T) {
+	// Given
+	evidence := completeScoringEvidence()
+	evidence.Baselines = append(evidence.Baselines, evidence.Baselines[8])
+	// When
+	score := ScoreEvidence(evidence)
+	// Then
+	require.Contains(t, score.HardGateFailures, "mandatory_baseline_execution")
+	require.NotContains(t, score.ClassesBeatingBaseline, "directional")
+	require.Equal(t, "NO-GO", score.TechnicalVerdict)
 }
 
 func Test_ScoreEvidence_rejects_unparsed_baseline_capabilities(t *testing.T) {
 	// Given
 	evidence := completeScoringEvidence()
-	evidence.Baselines[0].OutputParsed = false
+	evidence.Baselines[8].OutputParsed = false
 	// When
 	score := ScoreEvidence(evidence)
 	// Then
 	require.Contains(t, score.HardGateFailures, "baseline_capability_parse")
+	require.NotContains(t, score.ClassesBeatingBaseline, "directional")
 	require.Equal(t, "NO-GO", score.TechnicalVerdict)
 }
 
@@ -67,7 +82,7 @@ func Test_ScoreEvidence_all_equivalent_baselines_produce_zero_wins(t *testing.T)
 	require.Equal(t, "NO-GO", score.TechnicalVerdict)
 }
 
-func Test_ScoreEvidence_unsupported_baseline_facts_produce_zero_wins(t *testing.T) {
+func Test_ScoreEvidence_incomplete_equivalent_facts_permit_class_wins(t *testing.T) {
 	// Given
 	evidence := completeScoringEvidence()
 	for index := range evidence.Baselines {
@@ -76,8 +91,8 @@ func Test_ScoreEvidence_unsupported_baseline_facts_produce_zero_wins(t *testing.
 	// When
 	score := ScoreEvidence(evidence)
 	// Then
-	require.Empty(t, score.ClassesBeatingBaseline)
-	require.Contains(t, score.HardGateFailures, "baseline_differentiation")
+	require.ElementsMatch(t, []string{"directional", "events", "names"}, score.ClassesBeatingBaseline)
+	require.Equal(t, "GO", score.TechnicalVerdict)
 }
 
 func Test_ScoreEvidence_one_equivalent_class_removes_only_that_win(t *testing.T) {

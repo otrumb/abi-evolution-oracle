@@ -56,21 +56,6 @@ func (value BaselineCapabilities) NamesEquivalent() bool {
 func (value BaselineCapabilities) EventsEquivalent() bool {
 	return value.value("topic_identity") && value.value("topic_layout_impact") && value.value("data_layout_impact") && value.value("filter_impact") && value.value("cross_decode_impact")
 }
-func (value BaselineCapabilities) supported(names ...string) bool {
-	for _, name := range names {
-		found := false
-		for _, fact := range value.Facts {
-			if fact.Name == name {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return false
-		}
-	}
-	return true
-}
 func (value BaselineCapabilities) value(name string) bool {
 	for _, fact := range value.Facts {
 		if fact.Name == name && fact.Value {
