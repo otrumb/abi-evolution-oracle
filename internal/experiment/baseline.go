@@ -31,5 +31,5 @@ func runBaseline(root, tool string, entry corpus.Entry) (Baseline, error) {
 	if err := json.Unmarshal(output, &decoded); err != nil {
 		return Baseline{}, fmt.Errorf("decode abidiff %s: %w", entry.ID, err)
 	}
-	return Baseline{entry.ID, exitCode, decoded.Bump, len(decoded.Breaking), len(decoded.Additions)}, nil
+	return Baseline{FixtureID: entry.ID, ExitCode: exitCode, Bump: decoded.Bump, Breaking: len(decoded.Breaking), Additions: len(decoded.Additions), ConsumerDetail: false}, nil
 }

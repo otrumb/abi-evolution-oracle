@@ -39,7 +39,7 @@ func probeEntry(root, abigenTool string, entry corpus.Entry) (Observation, error
 	case "collisions":
 		return collisionObservation(entry, oldABI, newABI), nil
 	case "structural":
-		return Observation{entry.ID, entry.Class, "structural_control", "observed", "baseline_classification_recorded", scope()}, nil
+		return Observation{FixtureID: entry.ID, Class: entry.Class, Probe: "structural_control", Status: "pending", Detail: "awaiting_baseline", Assessment: scope()}, nil
 	default:
 		return Observation{}, fmt.Errorf("unknown class %s", entry.Class)
 	}
@@ -68,7 +68,7 @@ func directionalObservation(entry corpus.Entry, oldABI, newABI ethabi.ABI) Obser
 		_, newOldErr := newMethod.Outputs.Unpack(sampleOutput(oldMethod.Outputs))
 		detail = fmt.Sprintf("selector_equal;old_new_error=%t;new_old_error=%t", oldNewErr != nil, newOldErr != nil)
 	}
-	return Observation{entry.ID, entry.Class, "go-ethereum_v1.15.11_directional", status, detail, scope()}
+	return Observation{FixtureID: entry.ID, Class: entry.Class, Probe: "go-ethereum_v1.15.11_directional", Status: status, Detail: detail, Assessment: scope(), Actionable: status == "observed"}
 }
 
 func sampleOutput(arguments ethabi.Arguments) []byte {
@@ -134,7 +134,7 @@ func nameObservation(root, tool string, entry corpus.Entry, oldABI, newABI ethab
 	if compileBreak != entry.Expected["old_consumer_compile_break"] {
 		status, detail = "rejected", detail+";expectation_mismatch"
 	}
-	return Observation{entry.ID, entry.Class, "abigen_v1.15.11_source", status, detail, scope()}, nil
+	return Observation{FixtureID: entry.ID, Class: entry.Class, Probe: "abigen_v1.15.11_source", Status: status, Detail: detail, Assessment: scope(), Actionable: status == "observed"}, nil
 }
 
 func canonicalSignature(value ethabi.ABI) string {

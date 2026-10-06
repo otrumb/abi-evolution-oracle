@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"local/abi-evolution-oracle-validation/internal/corpus"
 )
 
 func Run(root, evidenceRoot, abidiffTool, abigenTool string) (Summary, Score, error) {
@@ -28,6 +30,8 @@ func Run(root, evidenceRoot, abidiffTool, abigenTool string) (Summary, Score, er
 	defer baselineFile.Close()
 	probeWriter, baselineWriter := bufio.NewWriter(probeFile), bufio.NewWriter(baselineFile)
 	summary := Summary{}
+	var observations []Observation
+	var baselines []Baseline
 	for _, entry := range entries {
 		observation, err := probeEntry(root, abigenTool, entry)
 		if err != nil {
@@ -37,10 +41,15 @@ func Run(root, evidenceRoot, abidiffTool, abigenTool string) (Summary, Score, er
 		if err != nil {
 			return Summary{}, Score{}, err
 		}
+		if entry.Class == "structural" {
+			observation = structuralObservation(entry, baseline)
+		}
 		probeData, _ := json.Marshal(observation)
 		baselineData, _ := json.Marshal(baseline)
 		fmt.Fprintln(probeWriter, string(probeData))
 		fmt.Fprintln(baselineWriter, string(baselineData))
+		observations = append(observations, observation)
+		baselines = append(baselines, baseline)
 		summary.Baselines++
 		passed := observation.Status == "observed" || observation.Status == "ambiguous"
 		if !passed {
@@ -65,20 +74,40 @@ func Run(root, evidenceRoot, abidiffTool, abigenTool string) (Summary, Score, er
 	if err := baselineWriter.Flush(); err != nil {
 		return Summary{}, Score{}, err
 	}
-	score := calculateScore(summary)
+	corpusSummary, err := corpus.Verify(root)
+	if err != nil {
+		return Summary{}, Score{}, err
+	}
+	score := ScoreEvidence(ScoringEvidence{Observations: observations, Baselines: baselines, Corpus: corpusSummary, Gates: GateEvidence{CorpusVerified: true, PublicationLocked: true}})
 	return summary, score, nil
 }
 
-func calculateScore(summary Summary) Score {
-	failures := []string{}
-	if summary != (Summary{12, 12, 12, 8, 6, 50}) {
-		failures = append(failures, "mandatory_fixture_execution")
+func structuralObservation(entry corpus.Entry, baseline Baseline) Observation {
+	expectedBump := ""
+	switch {
+	case entry.Expected["semver_major"]:
+		expectedBump = "major"
+	case entry.Expected["semver_minor"]:
+		expectedBump = "minor"
+	case entry.Expected["semver_none"]:
+		expectedBump = "none"
 	}
-	value, verdict := 100, "GO"
-	if len(failures) > 0 {
-		value, verdict = 0, "NO-GO"
+	valid := baseline.Bump == expectedBump
+	if entry.Expected["baseline_breaking"] {
+		valid = valid && baseline.Breaking > 0
 	}
-	return Score{value, verdict, []string{"directional", "names", "events"}, failures}
+	if entry.Expected["baseline_addition"] {
+		valid = valid && baseline.Additions > 0
+	}
+	if entry.Expected["baseline_unchanged"] {
+		valid = valid && baseline.Breaking == 0 && baseline.Additions == 0
+	}
+	status := "observed"
+	if !valid {
+		status = "rejected"
+	}
+	detail := fmt.Sprintf("expected_bump=%s;actual_bump=%s;breaking=%d;additions=%d", expectedBump, baseline.Bump, baseline.Breaking, baseline.Additions)
+	return Observation{FixtureID: entry.ID, Class: entry.Class, Probe: "structural_control", Status: status, Detail: detail, Assessment: scope(), Actionable: valid}
 }
 
 func ProbeOne(root, abigenTool, fixtureID string) (Observation, error) {
