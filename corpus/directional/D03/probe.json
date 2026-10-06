@@ -1,10 +1,15 @@
 {
-  "assessment": {
-    "deployment_compatibility": "unknown",
-    "runtime_behavior": "not_assessed",
-    "security": "not_assessed",
-    "storage_compatibility": "not_assessed"
+  "id": "D03",
+  "scenario": "fixed_word_reinterpretation",
+  "expected_observations": {
+    "consumer_observation": true,
+    "decode_both_directions": true,
+    "selector_invariant": true
   },
-  "change": "bytes32 to uint256",
-  "id": "D03"
+  "assessment": {
+    "runtime_behavior": "not_assessed",
+    "storage_compatibility": "not_assessed",
+    "security": "not_assessed",
+    "deployment_compatibility": "unknown"
+  }
 }

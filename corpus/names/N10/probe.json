@@ -1,10 +1,16 @@
 {
-  "assessment": {
-    "deployment_compatibility": "unknown",
-    "runtime_behavior": "not_assessed",
-    "security": "not_assessed",
-    "storage_compatibility": "not_assessed"
+  "id": "N10",
+  "scenario": "unnamed_becomes_named",
+  "expected_observations": {
+    "generated_source_change": true,
+    "old_consumer_compile_break": false,
+    "signature_invariant": true,
+    "wire_invariant": true
   },
-  "change": "generated identifier rename",
-  "id": "N10"
+  "assessment": {
+    "runtime_behavior": "not_assessed",
+    "storage_compatibility": "not_assessed",
+    "security": "not_assessed",
+    "deployment_compatibility": "unknown"
+  }
 }

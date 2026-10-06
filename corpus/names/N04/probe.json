@@ -1,10 +1,16 @@
 {
-  "assessment": {
-    "deployment_compatibility": "unknown",
-    "runtime_behavior": "not_assessed",
-    "security": "not_assessed",
-    "storage_compatibility": "not_assessed"
+  "id": "N04",
+  "scenario": "nested_output_tuple_member",
+  "expected_observations": {
+    "generated_source_change": true,
+    "old_consumer_compile_break": true,
+    "signature_invariant": true,
+    "wire_invariant": true
   },
-  "change": "generated identifier rename",
-  "id": "N04"
+  "assessment": {
+    "runtime_behavior": "not_assessed",
+    "storage_compatibility": "not_assessed",
+    "security": "not_assessed",
+    "deployment_compatibility": "unknown"
+  }
 }

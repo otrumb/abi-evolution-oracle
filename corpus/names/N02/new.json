@@ -1,1 +1,1 @@
-[{"type":"function","name":"probe","stateMutability":"view","inputs":[],"outputs":[{"name":"newField2","type":"uint256"}]}]
+[{"type":"function","name":"probe","stateMutability":"view","inputs":[],"outputs":[{"name":"first","type":"uint256"},{"name":"second","type":"address"}]}]

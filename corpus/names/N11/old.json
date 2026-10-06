@@ -1,1 +1,1 @@
-[{"type":"function","name":"probe","stateMutability":"view","inputs":[],"outputs":[{"name":"oldField11","type":"uint256"}]}]
+[{"type":"event","name":"Observed","anonymous":false,"inputs":[{"name":"before","type":"uint256","indexed":false}]}]
