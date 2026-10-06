@@ -1,10 +1,15 @@
 {
-  "assessment": {
-    "deployment_compatibility": "unknown",
-    "runtime_behavior": "not_assessed",
-    "security": "not_assessed",
-    "storage_compatibility": "not_assessed"
+  "id": "S02",
+  "scenario": "function_removed",
+  "expected_observations": {
+    "baseline_breaking": true,
+    "semantic_change": true,
+    "semver_major": true
   },
-  "change": "function removed",
-  "id": "S02"
+  "assessment": {
+    "runtime_behavior": "not_assessed",
+    "storage_compatibility": "not_assessed",
+    "security": "not_assessed",
+    "deployment_compatibility": "unknown"
+  }
 }

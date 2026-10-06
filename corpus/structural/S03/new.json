@@ -1,1 +1,1 @@
-[{"type":"function","name":"set","stateMutability":"nonpayable","inputs":[{"name":"x","type":"address"}],"outputs":[]}]
+[{"type":"function","name":"set","stateMutability":"view","inputs":[{"name":"value","type":"address"}],"outputs":[]}]

@@ -1,10 +1,15 @@
 {
-  "assessment": {
-    "deployment_compatibility": "unknown",
-    "runtime_behavior": "not_assessed",
-    "security": "not_assessed",
-    "storage_compatibility": "not_assessed"
+  "id": "S06",
+  "scenario": "json_rewrapped_semantically_equal",
+  "expected_observations": {
+    "baseline_unchanged": true,
+    "semantic_equal": true,
+    "semver_none": true
   },
-  "change": "semantic no change",
-  "id": "S06"
+  "assessment": {
+    "runtime_behavior": "not_assessed",
+    "storage_compatibility": "not_assessed",
+    "security": "not_assessed",
+    "deployment_compatibility": "unknown"
+  }
 }
