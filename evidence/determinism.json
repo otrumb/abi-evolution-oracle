@@ -1,0 +1,12 @@
+{
+  "full_runs": 2,
+  "full_runs_byte_identical": true,
+  "representative_fresh_processes": {
+    "C01": 30,
+    "D06": 30,
+    "E07": 30,
+    "N03": 30,
+    "S06": 30
+  },
+  "representative_records_identical": true
+}

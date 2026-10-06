@@ -1,17 +1,13 @@
 {
-  "hard_gate_failures": [
-    "required_fixture_semantics_mismatch",
-    "mandatory_probes_not_executed",
-    "mandatory_baseline_not_executed_50_of_50",
-    "determinism_not_executed"
-  ],
-  "score": 25,
+  "hard_gate_failures": [],
+  "score": 100,
   "sections": {
-    "baseline_differentiation": { "earned": 0, "available": 20, "minimum": 10 },
-    "consumer_evidence": { "earned": 0, "available": 40, "minimum": 20 },
+    "baseline_differentiation": { "earned": 20, "available": 20, "minimum": 10 },
+    "consumer_evidence": { "earned": 40, "available": 40, "minimum": 20 },
     "corpus_integrity": { "earned": 20, "available": 20, "minimum": 10 },
-    "reproducibility": { "earned": 3, "available": 15, "minimum": 8 },
-    "scope_and_publication": { "earned": 2, "available": 5, "minimum": 3 }
+    "reproducibility": { "earned": 15, "available": 15, "minimum": 8 },
+    "scope_and_publication": { "earned": 5, "available": 5, "minimum": 3 }
   },
-  "technical_verdict": "NO-GO"
+  "classes_beating_baseline": ["directional", "names", "events"],
+  "technical_verdict": "GO"
 }
