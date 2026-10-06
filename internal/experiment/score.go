@@ -135,7 +135,7 @@ func classWins(classes map[string][]Observation, baselines map[string]Baseline) 
 		equivalent := false
 		for _, value := range values {
 			baseline, ok := baselines[value.FixtureID]
-			if !ok || baseline.ConsumerDetail {
+			if !ok || !baseline.CapabilitiesParsed || baselineEquivalent(class, baseline.Capabilities) {
 				equivalent = true
 				break
 			}
@@ -147,6 +147,18 @@ func classWins(classes map[string][]Observation, baselines map[string]Baseline) 
 	sort.Strings(wins)
 	return wins
 }
+func baselineEquivalent(class string, capabilities BaselineCapabilities) bool {
+	switch class {
+	case "directional":
+		return capabilities.DirectionalEquivalent()
+	case "names":
+		return capabilities.NamesEquivalent()
+	case "events":
+		return capabilities.EventsEquivalent()
+	default:
+		return false
+	}
+}
 func hardFailures(evidence ScoringEvidence, sections ScoreSections, wins []string, baselines map[string]Baseline) []string {
 	failures := []string{}
 	if len(evidence.Observations) != 50 {
@@ -154,6 +166,12 @@ func hardFailures(evidence ScoringEvidence, sections ScoreSections, wins []strin
 	}
 	if len(evidence.Baselines) != 50 || len(baselines) != 50 {
 		failures = append(failures, "mandatory_baseline_execution")
+	}
+	for _, baseline := range evidence.Baselines {
+		if !baseline.CapabilitiesParsed {
+			failures = append(failures, "baseline_capability_parse")
+			break
+		}
 	}
 	if !collisionsPass(filterClass(evidence.Observations, "collisions")) {
 		failures = append(failures, "collision_ambiguity")

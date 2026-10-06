@@ -1,6 +1,7 @@
 package experiment
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -28,6 +29,17 @@ func Test_ScoreEvidence_rejects_missing_baseline_record(t *testing.T) {
 	require.Contains(t, score.HardGateFailures, "mandatory_baseline_execution")
 }
 
+func Test_ScoreEvidence_rejects_unparsed_baseline_capabilities(t *testing.T) {
+	// Given
+	evidence := completeScoringEvidence()
+	evidence.Baselines[0].CapabilitiesParsed = false
+	// When
+	score := ScoreEvidence(evidence)
+	// Then
+	require.Contains(t, score.HardGateFailures, "baseline_capability_parse")
+	require.Equal(t, "NO-GO", score.TechnicalVerdict)
+}
+
 func Test_ScoreEvidence_requires_actionable_consumer_detail_for_class_win(t *testing.T) {
 	// Given
 	evidence := completeScoringEvidence()
@@ -40,6 +52,33 @@ func Test_ScoreEvidence_requires_actionable_consumer_detail_for_class_win(t *tes
 	score := ScoreEvidence(evidence)
 	// Then
 	require.NotContains(t, score.ClassesBeatingBaseline, "events")
+}
+
+func Test_ScoreEvidence_all_equivalent_baselines_produce_zero_wins(t *testing.T) {
+	// Given
+	evidence := completeScoringEvidence()
+	for index := range evidence.Baselines {
+		evidence.Baselines[index].Capabilities = allConsumerCapabilities()
+	}
+	// When
+	score := ScoreEvidence(evidence)
+	// Then
+	require.Empty(t, score.ClassesBeatingBaseline)
+	require.Equal(t, "NO-GO", score.TechnicalVerdict)
+}
+
+func Test_ScoreEvidence_one_equivalent_class_removes_only_that_win(t *testing.T) {
+	// Given
+	evidence := completeScoringEvidence()
+	for index := range evidence.Baselines {
+		if strings.HasPrefix(evidence.Baselines[index].FixtureID, "events") {
+			evidence.Baselines[index].Capabilities = allConsumerCapabilities()
+		}
+	}
+	// When
+	score := ScoreEvidence(evidence)
+	// Then
+	require.ElementsMatch(t, []string{"directional", "names"}, score.ClassesBeatingBaseline)
 }
 
 func Test_ScoreEvidence_enforces_section_floor_and_hard_gate(t *testing.T) {
@@ -69,8 +108,12 @@ func completeScoringEvidence() ScoringEvidence {
 		for index := range class.count {
 			id := class.name + string(rune('A'+index))
 			observations = append(observations, Observation{FixtureID: id, Class: class.name, Status: class.status, Actionable: true, Assessment: scope(), CandidateCount: 2})
-			baselines = append(baselines, Baseline{FixtureID: id, Bump: "none"})
+			baselines = append(baselines, Baseline{FixtureID: id, Bump: "none", CapabilitiesParsed: true})
 		}
 	}
 	return ScoringEvidence{Observations: observations, Baselines: baselines, Corpus: corpus.Summary{Total: 50, Directional: 12, Names: 12, Events: 12, Collisions: 8, Structural: 6}, Gates: GateEvidence{CorpusVerified: true, HashesVerified: true, ProvenanceVerified: true, ExpectationsVerified: true, PinsVerified: true, TestsVerified: true, Deterministic: true, EvidencePolicy: true, PublicationLocked: true}}
+}
+
+func allConsumerCapabilities() BaselineCapabilities {
+	return BaselineCapabilities{CallIdentityUnchanged: true, OldConsumerNewProducerDecode: true, NewConsumerOldProducerDecode: true, WireIdentityUnchanged: true, GeneratedAPIImpact: true, SourceCompileImpact: true, TopicIdentity: true, TopicLayoutImpact: true, DataLayoutImpact: true, FilterImpact: true, CrossDecodeImpact: true}
 }

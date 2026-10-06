@@ -20,13 +20,38 @@ type Observation struct {
 	ArbitraryWinner bool       `json:"arbitrary_winner,omitempty"`
 }
 type Baseline struct {
-	FixtureID      string `json:"fixture_id"`
-	ExitCode       int    `json:"exit_code"`
-	Bump           string `json:"bump"`
-	Breaking       int    `json:"breaking"`
-	Additions      int    `json:"additions"`
-	ConsumerDetail bool   `json:"consumer_detail"`
+	FixtureID          string               `json:"fixture_id"`
+	ExitCode           int                  `json:"exit_code"`
+	Bump               string               `json:"bump"`
+	Breaking           int                  `json:"breaking"`
+	Additions          int                  `json:"additions"`
+	Capabilities       BaselineCapabilities `json:"capabilities"`
+	CapabilitiesParsed bool                 `json:"capabilities_parsed"`
 }
+type BaselineCapabilities struct {
+	CallIdentityUnchanged        bool `json:"call_identity_unchanged"`
+	OldConsumerNewProducerDecode bool `json:"old_consumer_new_producer_decode"`
+	NewConsumerOldProducerDecode bool `json:"new_consumer_old_producer_decode"`
+	WireIdentityUnchanged        bool `json:"wire_identity_unchanged"`
+	GeneratedAPIImpact           bool `json:"generated_api_impact"`
+	SourceCompileImpact          bool `json:"source_compile_impact"`
+	TopicIdentity                bool `json:"topic_identity"`
+	TopicLayoutImpact            bool `json:"topic_layout_impact"`
+	DataLayoutImpact             bool `json:"data_layout_impact"`
+	FilterImpact                 bool `json:"filter_impact"`
+	CrossDecodeImpact            bool `json:"cross_decode_impact"`
+}
+
+func (value BaselineCapabilities) DirectionalEquivalent() bool {
+	return value.CallIdentityUnchanged && value.OldConsumerNewProducerDecode && value.NewConsumerOldProducerDecode
+}
+func (value BaselineCapabilities) NamesEquivalent() bool {
+	return value.WireIdentityUnchanged && value.GeneratedAPIImpact && value.SourceCompileImpact
+}
+func (value BaselineCapabilities) EventsEquivalent() bool {
+	return value.TopicIdentity && value.TopicLayoutImpact && value.DataLayoutImpact && value.FilterImpact && value.CrossDecodeImpact
+}
+
 type Summary struct {
 	Directional int `json:"directional"`
 	Names       int `json:"names"`

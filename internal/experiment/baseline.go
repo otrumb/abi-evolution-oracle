@@ -10,9 +10,11 @@ import (
 )
 
 type baselineOutput struct {
-	Breaking  []json.RawMessage `json:"breaking"`
-	Additions []json.RawMessage `json:"additions"`
-	Bump      string            `json:"bump"`
+	Breaking      *[]json.RawMessage   `json:"breaking"`
+	Additions     *[]json.RawMessage   `json:"additions"`
+	Notes         *[]json.RawMessage   `json:"notes"`
+	Bump          *string              `json:"bump"`
+	ConsumerFacts BaselineCapabilities `json:"consumer_facts"`
 }
 
 func runBaseline(root, tool string, entry corpus.Entry) (Baseline, error) {
@@ -27,9 +29,21 @@ func runBaseline(root, tool string, entry corpus.Entry) (Baseline, error) {
 			return Baseline{}, fmt.Errorf("run abidiff: %w", runErr)
 		}
 	}
+	baseline, err := parseBaselineOutput(entry.ID, output)
+	if err != nil {
+		return Baseline{}, err
+	}
+	baseline.ExitCode = exitCode
+	return baseline, nil
+}
+
+func parseBaselineOutput(fixtureID string, output []byte) (Baseline, error) {
 	var decoded baselineOutput
 	if err := json.Unmarshal(output, &decoded); err != nil {
-		return Baseline{}, fmt.Errorf("decode abidiff %s: %w", entry.ID, err)
+		return Baseline{}, fmt.Errorf("decode abidiff %s: %w", fixtureID, err)
 	}
-	return Baseline{FixtureID: entry.ID, ExitCode: exitCode, Bump: decoded.Bump, Breaking: len(decoded.Breaking), Additions: len(decoded.Additions), ConsumerDetail: false}, nil
+	if decoded.Breaking == nil || decoded.Additions == nil || decoded.Notes == nil || decoded.Bump == nil {
+		return Baseline{}, fmt.Errorf("decode abidiff %s: missing required fields", fixtureID)
+	}
+	return Baseline{FixtureID: fixtureID, Bump: *decoded.Bump, Breaking: len(*decoded.Breaking), Additions: len(*decoded.Additions), Capabilities: decoded.ConsumerFacts, CapabilitiesParsed: true}, nil
 }
