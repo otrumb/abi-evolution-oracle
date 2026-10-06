@@ -148,7 +148,7 @@ func classWins(classes map[string][]Observation, baselines map[string]Baseline) 
 	return wins
 }
 func hardFailures(evidence ScoringEvidence, sections ScoreSections, wins []string, baselines map[string]Baseline) []string {
-	var failures []string
+	failures := []string{}
 	if len(evidence.Observations) != 50 {
 		failures = append(failures, "mandatory_fixture_execution")
 	}
