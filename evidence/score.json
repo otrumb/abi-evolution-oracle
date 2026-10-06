@@ -1,13 +1,37 @@
 {
-  "hard_gate_failures": [],
   "score": 100,
+  "technical_verdict": "GO",
+  "classes_beating_baseline": [
+    "directional",
+    "events",
+    "names"
+  ],
+  "hard_gate_failures": [],
   "sections": {
-    "baseline_differentiation": { "earned": 20, "available": 20, "minimum": 10 },
-    "consumer_evidence": { "earned": 40, "available": 40, "minimum": 20 },
-    "corpus_integrity": { "earned": 20, "available": 20, "minimum": 10 },
-    "reproducibility": { "earned": 15, "available": 15, "minimum": 8 },
-    "scope_and_publication": { "earned": 5, "available": 5, "minimum": 3 }
-  },
-  "classes_beating_baseline": ["directional", "names", "events"],
-  "technical_verdict": "GO"
+    "consumer_evidence": {
+      "earned": 40,
+      "available": 40,
+      "minimum": 20
+    },
+    "corpus_integrity": {
+      "earned": 20,
+      "available": 20,
+      "minimum": 10
+    },
+    "baseline_differentiation": {
+      "earned": 20,
+      "available": 20,
+      "minimum": 10
+    },
+    "reproducibility": {
+      "earned": 15,
+      "available": 15,
+      "minimum": 8
+    },
+    "scope_and_publication": {
+      "earned": 5,
+      "available": 5,
+      "minimum": 3
+    }
+  }
 }

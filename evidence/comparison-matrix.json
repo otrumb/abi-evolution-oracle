@@ -2,8 +2,9 @@
   "admitted_baselines": ["jay-tank/abidiff@c9488370c95cd0f9406d3fbec6aa26cc95c1f3b6"],
   "optional_baselines": [{"tool":"sol-abi-compare","status":"unavailable","reason":"not_attempted_after_mandatory_baseline_admission","scored":false}],
   "classes": {
-    "directional": {"fixtures":12,"baseline_equivalent":false,"consumer_probe":"old_new_and_new_old_decode"},
-    "names": {"fixtures":12,"baseline_equivalent":false,"consumer_probe":"abigen_generate_and_compile"},
-    "events": {"fixtures":12,"baseline_equivalent":false,"consumer_probe":"filter_topic_data_decode"}
-  }
+    "directional": {"fixtures":12,"actionable_observations":12,"baseline_consumer_detail":false,"beats_baseline":true},
+    "events": {"fixtures":12,"actionable_observations":12,"baseline_consumer_detail":false,"beats_baseline":true},
+    "names": {"fixtures":12,"actionable_observations":12,"baseline_consumer_detail":false,"beats_baseline":true}
+  },
+  "source": "evidence/observations.jsonl + evidence/abidiff.jsonl + evidence/score.json"
 }

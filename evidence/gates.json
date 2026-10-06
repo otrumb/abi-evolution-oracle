@@ -1,0 +1,11 @@
+{
+  "corpus_verified": true,
+  "hashes_verified": true,
+  "provenance_verified": true,
+  "expectations_verified": true,
+  "pins_verified": true,
+  "tests_verified": true,
+  "deterministic": true,
+  "evidence_policy": true,
+  "publication_locked": true
+}

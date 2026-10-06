@@ -6,3 +6,7 @@ repair plus complete execution. History remains unchanged.
 
 Current verdict derives only from repaired 50-case corpus, pinned baseline execution,
 consumer probes, deterministic replay, and frozen scoring gates.
+
+Closure after `9a35e48` found two valid blockers: event/structural/collision status
+constants and summary-only score constants. Append-only repairs now derive statuses,
+candidate sets, section points, floors, class wins, and hard gates from recorded evidence.
