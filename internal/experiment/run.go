@@ -42,6 +42,10 @@ func Run(root, evidenceRoot, abidiffTool, abigenTool string) (Summary, Score, er
 		fmt.Fprintln(probeWriter, string(probeData))
 		fmt.Fprintln(baselineWriter, string(baselineData))
 		summary.Baselines++
+		passed := observation.Status == "observed" || observation.Status == "ambiguous"
+		if !passed {
+			continue
+		}
 		switch entry.Class {
 		case "directional":
 			summary.Directional++
@@ -75,4 +79,17 @@ func calculateScore(summary Summary) Score {
 		value, verdict = 0, "NO-GO"
 	}
 	return Score{value, verdict, []string{"directional", "names", "events"}, failures}
+}
+
+func ProbeOne(root, abigenTool, fixtureID string) (Observation, error) {
+	entries, err := loadEntries(root)
+	if err != nil {
+		return Observation{}, err
+	}
+	for _, entry := range entries {
+		if entry.ID == fixtureID {
+			return probeEntry(root, abigenTool, entry)
+		}
+	}
+	return Observation{}, fmt.Errorf("fixture not found: %s", fixtureID)
 }

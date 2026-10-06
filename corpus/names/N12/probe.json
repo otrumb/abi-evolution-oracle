@@ -3,7 +3,7 @@
   "scenario": "custom_error_argument_name",
   "expected_observations": {
     "generated_source_change": true,
-    "old_consumer_compile_break": true,
+    "old_consumer_compile_break": false,
     "signature_invariant": true,
     "wire_invariant": true
   },

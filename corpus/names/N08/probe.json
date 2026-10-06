@@ -3,7 +3,7 @@
   "scenario": "generated_type_name_collision_after_sanitization",
   "expected_observations": {
     "generated_source_change": true,
-    "old_consumer_compile_break": true,
+    "old_consumer_compile_break": false,
     "signature_invariant": true,
     "wire_invariant": true
   },

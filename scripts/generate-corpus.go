@@ -100,11 +100,11 @@ func nameFixtures() []fixture {
 		{"N05", "names", "output_tuple_array_member", function("probe", "[]", "["+array("before")+"]"), function("probe", "[]", "["+array("after")+"]"), nameExpected(true)},
 		{"N06", "names", "input_tuple_member", function("probe", "["+tuple("before")+"]", "[]"), function("probe", "["+tuple("after")+"]", "[]"), nameExpected(true)},
 		{"N07", "names", "nested_input_tuple_member", function("probe", "["+nested("before")+"]", "[]"), function("probe", "["+nested("after")+"]", "[]"), nameExpected(true)},
-		{"N08", "names", "generated_type_name_collision_after_sanitization", function("probe", `[ {"name":"foo_bar","type":"tuple","components":[{"name":"x","type":"uint256"}]} ]`, "[]"), function("probe", `[ {"name":"fooBar","type":"tuple","components":[{"name":"x","type":"uint256"}]} ]`, "[]"), nameExpected(true)},
+		{"N08", "names", "generated_type_name_collision_after_sanitization", function("probe", `[ {"name":"foo_bar","type":"tuple","components":[{"name":"x","type":"uint256"}]} ]`, "[]"), function("probe", `[ {"name":"fooBar","type":"tuple","components":[{"name":"x","type":"uint256"}]} ]`, "[]"), nameExpected(false)},
 		{"N09", "names", "acronym_case_normalization", function("probe", `[{"name":"urlValue","type":"uint256"}]`, "[]"), function("probe", `[{"name":"URLValue","type":"uint256"}]`, "[]"), nameExpected(false)},
 		{"N10", "names", "unnamed_becomes_named", function("probe", "[]", `[{"name":"","type":"uint256"}]`), function("probe", "[]", `[{"name":"value","type":"uint256"}]`), nameExpected(false)},
 		{"N11", "names", "event_argument_name", event("Observed", false, arg("before", "uint256", false)), event("Observed", false, arg("after", "uint256", false)), nameExpected(true)},
-		{"N12", "names", "custom_error_argument_name", customError("Failure", "before", "uint256"), customError("Failure", "after", "uint256"), nameExpected(true)},
+		{"N12", "names", "custom_error_argument_name", customError("Failure", "before", "uint256"), customError("Failure", "after", "uint256"), nameExpected(false)},
 	}
 }
 

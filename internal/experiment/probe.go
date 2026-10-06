@@ -5,15 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"reflect"
-	"strings"
 
 	ethabi "github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"local/abi-evolution-oracle-validation/internal/corpus"
 )
 
@@ -131,23 +126,13 @@ func nameObservation(root, tool string, entry corpus.Entry, oldABI, newABI ethab
 	if oldSignature != newSignature {
 		status, detail = "rejected", "canonical_signature_changed"
 	}
-	temp, err := os.MkdirTemp("", "abi-generated-")
+	compileBreak, err := compileGeneratedPair(root, tool, entry.Old, entry.New)
 	if err != nil {
-		return Observation{}, fmt.Errorf("create generated temp: %w", err)
+		return Observation{}, fmt.Errorf("generated probe %s: %w", entry.ID, err)
 	}
-	defer os.RemoveAll(temp)
-	for label, path := range map[string]string{"old": entry.Old, "new": entry.New} {
-		generated := filepath.Join(temp, label+".go")
-		command := exec.Command(tool, "--abi", filepath.Join(root, filepath.FromSlash(path)), "--pkg", "binding", "--type", "Fixture", "--out", generated)
-		if output, err := command.CombinedOutput(); err != nil {
-			return Observation{}, fmt.Errorf("abigen %s %s: %s: %w", entry.ID, label, string(output), err)
-		}
-		compile := exec.Command("go", "test", "-mod=mod", generated)
-		compile.Dir = root
-		compile.Env = append(os.Environ(), "CGO_ENABLED=0", "GOTOOLCHAIN=local")
-		if output, err := compile.CombinedOutput(); err != nil {
-			return Observation{}, fmt.Errorf("compile binding %s %s: %s: %w", entry.ID, label, string(output), err)
-		}
+	detail += fmt.Sprintf(";old_consumer_new_binding_error=%t", compileBreak)
+	if compileBreak != entry.Expected["old_consumer_compile_break"] {
+		status, detail = "rejected", detail+";expectation_mismatch"
 	}
 	return Observation{entry.ID, entry.Class, "abigen_v1.15.11_source", status, detail, scope()}, nil
 }
@@ -164,52 +149,3 @@ func canonicalSignature(value ethabi.ABI) string {
 	}
 	return ""
 }
-
-func eventObservation(entry corpus.Entry, oldABI, newABI ethabi.ABI) Observation {
-	oldEvent, newEvent := oldABI.Events["Observed"], newABI.Events["Observed"]
-	oldTopics, oldData := syntheticLog(oldEvent)
-	newTopics, newData := syntheticLog(newEvent)
-	detail := fmt.Sprintf("old_topics=%d;new_topics=%d;old_data=%d;new_data=%d;filter_equal=%t", len(oldTopics), len(newTopics), len(oldData), len(newData), len(oldTopics) > 0 && len(newTopics) > 0 && oldTopics[0] == newTopics[0])
-	return Observation{entry.ID, entry.Class, "go-ethereum_v1.15.11_event", "observed", detail, scope()}
-}
-
-func syntheticLog(event ethabi.Event) ([]common.Hash, []byte) {
-	var topics []common.Hash
-	if !event.Anonymous {
-		topics = append(topics, event.ID)
-	}
-	var values []any
-	var dataArgs ethabi.Arguments
-	for _, input := range event.Inputs {
-		value := sampleValue(input.Type)
-		if input.Indexed {
-			packed, _ := ethabi.Arguments{input}.Pack(value)
-			topics = append(topics, crypto.Keccak256Hash(packed))
-		} else {
-			dataArgs = append(dataArgs, input)
-			values = append(values, value)
-		}
-	}
-	data, _ := dataArgs.Pack(values...)
-	return topics, data
-}
-
-func collisionObservation(entry corpus.Entry, oldABI, newABI ethabi.ABI) Observation {
-	candidates := 2
-	detail := "candidate_count=2;arbitrary_winner=false"
-	if entry.ID == "C01" {
-		oldMethod := firstMethod(oldABI)
-		newMethod := firstMethod(newABI)
-		detail = fmt.Sprintf("candidate_count=%d;selector_equal=%t;arbitrary_winner=false", candidates, bytes.Equal(oldMethod.ID, newMethod.ID))
-	}
-	return Observation{entry.ID, entry.Class, "ambiguity_preservation", "ambiguous", detail, scope()}
-}
-
-func firstMethod(value ethabi.ABI) ethabi.Method {
-	for _, method := range value.Methods {
-		return method
-	}
-	return ethabi.Method{}
-}
-
-func normalizeDetail(value string) string { return strings.ReplaceAll(value, "\\", "/") }

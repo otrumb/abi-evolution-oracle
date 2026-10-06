@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -33,6 +34,22 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Printf("probes: D=%d N=%d E=%d C=%d S=%d baseline=%d score=%d verdict=%s\n", summary.Directional, summary.Names, summary.Events, summary.Collisions, summary.Structural, summary.Baselines, score.Score, score.TechnicalVerdict)
+	case "probe-one":
+		if len(os.Args) != 4 {
+			fmt.Fprintln(os.Stderr, "usage: abi-oracle probe-one FIXTURE_ID ABIGEN")
+			os.Exit(2)
+		}
+		observation, err := experiment.ProbeOne(".", filepath.Clean(os.Args[3]), os.Args[2])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		data, err := json.Marshal(observation)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		fmt.Println(string(data))
 	default:
 		fmt.Fprintln(os.Stderr, "usage: abi-oracle verify-corpus|run")
 		os.Exit(2)
