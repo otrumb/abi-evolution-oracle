@@ -1,4 +1,4 @@
-module local/abi-evolution-oracle-validation
+module github.com/otrumb/abi-evolution-oracle
 
 go 1.24.0
 

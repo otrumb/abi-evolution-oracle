@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"local/abi-evolution-oracle-validation/internal/corpus"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 )
 
 func ScoreRecorded(root, evidenceRoot, gatePath string) (Score, error) {

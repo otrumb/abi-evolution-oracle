@@ -6,13 +6,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"local/abi-evolution-oracle-validation/internal/corpus"
-	"local/abi-evolution-oracle-validation/internal/experiment"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
+	"github.com/otrumb/abi-evolution-oracle/internal/experiment"
 )
+
+const usage = "usage: abi-evolution-oracle verify-corpus|run|probe-one|score"
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: abi-oracle verify-corpus|run")
+		fmt.Fprintln(os.Stderr, usage)
 		os.Exit(2)
 	}
 	switch os.Args[1] {
@@ -25,7 +27,7 @@ func main() {
 		fmt.Printf("corpus verified: total=%d directional=%d names=%d events=%d collisions=%d structural=%d\n", summary.Total, summary.Directional, summary.Names, summary.Events, summary.Collisions, summary.Structural)
 	case "run":
 		if len(os.Args) != 5 {
-			fmt.Fprintln(os.Stderr, "usage: abi-oracle run EVIDENCE_ROOT ABIDIFF_CLI ABIGEN")
+			fmt.Fprintln(os.Stderr, "usage: abi-evolution-oracle run EVIDENCE_ROOT ABIDIFF_CLI ABIGEN")
 			os.Exit(2)
 		}
 		summary, score, err := experiment.Run(".", filepath.Clean(os.Args[2]), filepath.Clean(os.Args[3]), filepath.Clean(os.Args[4]))
@@ -36,7 +38,7 @@ func main() {
 		fmt.Printf("probes: D=%d N=%d E=%d C=%d S=%d baseline=%d score=%d verdict=%s\n", summary.Directional, summary.Names, summary.Events, summary.Collisions, summary.Structural, summary.Baselines, score.Score, score.TechnicalVerdict)
 	case "probe-one":
 		if len(os.Args) != 4 {
-			fmt.Fprintln(os.Stderr, "usage: abi-oracle probe-one FIXTURE_ID ABIGEN")
+			fmt.Fprintln(os.Stderr, "usage: abi-evolution-oracle probe-one FIXTURE_ID ABIGEN")
 			os.Exit(2)
 		}
 		observation, err := experiment.ProbeOne(".", filepath.Clean(os.Args[3]), os.Args[2])
@@ -52,7 +54,7 @@ func main() {
 		fmt.Println(string(data))
 	case "score":
 		if len(os.Args) != 4 {
-			fmt.Fprintln(os.Stderr, "usage: abi-oracle score EVIDENCE_ROOT GATE_JSON")
+			fmt.Fprintln(os.Stderr, "usage: abi-evolution-oracle score EVIDENCE_ROOT GATE_JSON")
 			os.Exit(2)
 		}
 		score, err := experiment.ScoreRecorded(".", filepath.Clean(os.Args[2]), filepath.Clean(os.Args[3]))
@@ -62,7 +64,7 @@ func main() {
 		}
 		fmt.Printf("score=%d verdict=%s wins=%d failures=%d\n", score.Score, score.TechnicalVerdict, len(score.ClassesBeatingBaseline), len(score.HardGateFailures))
 	default:
-		fmt.Fprintln(os.Stderr, "usage: abi-oracle verify-corpus|run")
+		fmt.Fprintln(os.Stderr, usage)
 		os.Exit(2)
 	}
 }

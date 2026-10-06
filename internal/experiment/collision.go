@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	ethabi "github.com/ethereum/go-ethereum/accounts/abi"
-	"local/abi-evolution-oracle-validation/internal/corpus"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 )
 
 func collisionObservation(entry corpus.Entry, oldABI, newABI ethabi.ABI) Observation {

@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 	"github.com/stretchr/testify/require"
-	"local/abi-evolution-oracle-validation/internal/corpus"
 )
 
 func Test_Verify_accepts_frozen_50_pair_corpus(t *testing.T) {

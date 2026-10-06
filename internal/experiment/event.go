@@ -6,7 +6,7 @@ import (
 	ethabi "github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"local/abi-evolution-oracle-validation/internal/corpus"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 )
 
 func eventObservation(entry corpus.Entry, oldABI, newABI ethabi.ABI) Observation {

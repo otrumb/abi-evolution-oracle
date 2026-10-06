@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"local/abi-evolution-oracle-validation/internal/corpus"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 )
 
 func loadEntries(root string) ([]corpus.Entry, error) {

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	ethabi "github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 	"github.com/stretchr/testify/require"
-	"local/abi-evolution-oracle-validation/internal/corpus"
 )
 
 func Test_EventObservation_rejects_unchanged_E01_layout(t *testing.T) {

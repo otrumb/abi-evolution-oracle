@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"local/abi-evolution-oracle-validation/internal/corpus"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 )
 
 func Run(root, evidenceRoot, abidiffTool, abigenTool string) (Summary, Score, error) {

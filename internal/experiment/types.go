@@ -1,6 +1,6 @@
 package experiment
 
-import "local/abi-evolution-oracle-validation/internal/corpus"
+import "github.com/otrumb/abi-evolution-oracle/internal/corpus"
 
 type Assessment struct {
 	Runtime    string `json:"runtime_behavior"`

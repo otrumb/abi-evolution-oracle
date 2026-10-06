@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"local/abi-evolution-oracle-validation/internal/corpus"
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 )
 
 type baselineOutput struct {

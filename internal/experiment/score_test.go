@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/otrumb/abi-evolution-oracle/internal/corpus"
 	"github.com/stretchr/testify/require"
-	"local/abi-evolution-oracle-validation/internal/corpus"
 )
 
 func Test_ScoreEvidence_rejects_mutated_observation_status(t *testing.T) {
