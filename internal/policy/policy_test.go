@@ -86,6 +86,13 @@ func Test_Workflows_pin_actions_and_enforce_least_privilege(t *testing.T) {
 	if !regexp.MustCompile(`(?s)release:\n.*?actions/checkout@[0-9a-f]{40}.*?ref: \$\{\{ github\.sha \}\}.*?--notes-file RELEASE_NOTES\.md`).MatchString(release) {
 		t.Fatal("release job must check out the exact tagged source before reading release notes")
 	}
+	ci := readFile(t, filepath.Join(root, ".github", "workflows", "ci.yml"))
+	if !strings.Contains(ci, "go install github.com/ethereum/go-ethereum/cmd/abigen@v1.15.11") {
+		t.Fatal("evidence replay must install exact abigen version outside the project module graph")
+	}
+	if strings.Contains(ci, "go build -trimpath -o \"$RUNNER_TEMP/abigen\" github.com/ethereum/go-ethereum/cmd/abigen") {
+		t.Fatal("evidence replay must not build abigen through project go.sum")
+	}
 }
 
 func Test_Release_notes_preserve_scope_boundaries(t *testing.T) {

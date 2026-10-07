@@ -66,7 +66,9 @@ jobs:
         with:
           node-version: 24.16.0
       - name: Build pinned abigen
-        run: go build -trimpath -o "$RUNNER_TEMP/abigen" github.com/ethereum/go-ethereum/cmd/abigen
+        env:
+          GOBIN: ${{ runner.temp }}
+        run: go install github.com/ethereum/go-ethereum/cmd/abigen@v1.15.11
       - name: Check out pinned abidiff
         run: |
           git clone --no-checkout https://github.com/jay-tank/abidiff.git "$RUNNER_TEMP/abidiff"
