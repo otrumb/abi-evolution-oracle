@@ -94,6 +94,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
       - uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           name: release-assets
@@ -101,4 +104,4 @@ jobs:
       - name: Create draft release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" --draft --verify-tag --title "${GITHUB_REF_NAME}" dist/abi-evolution-oracle_0.1.0_linux_amd64.tar.gz dist/abi-evolution-oracle_0.1.0_windows_amd64.zip dist/SHA256SUMS
+        run: gh release create "${GITHUB_REF_NAME}" --draft --verify-tag --title "${GITHUB_REF_NAME}" --notes-file RELEASE_NOTES.md dist/abi-evolution-oracle_0.1.0_linux_amd64.tar.gz dist/abi-evolution-oracle_0.1.0_windows_amd64.zip dist/SHA256SUMS

@@ -80,6 +80,32 @@ func Test_Workflows_pin_actions_and_enforce_least_privilege(t *testing.T) {
 	if !strings.Contains(release, `gh release create "${GITHUB_REF_NAME}" --draft --verify-tag`) {
 		t.Fatal("release creation must remain draft and verify tag")
 	}
+	if !strings.Contains(release, `--notes-file RELEASE_NOTES.md`) {
+		t.Fatal("release creation must use reviewed release notes")
+	}
+	if !regexp.MustCompile(`(?s)release:\n.*?actions/checkout@[0-9a-f]{40}.*?ref: \$\{\{ github\.sha \}\}.*?--notes-file RELEASE_NOTES\.md`).MatchString(release) {
+		t.Fatal("release job must check out the exact tagged source before reading release notes")
+	}
+}
+
+func Test_Release_notes_preserve_scope_boundaries(t *testing.T) {
+	root := repositoryRoot(t)
+	notes := readFile(t, filepath.Join(root, "RELEASE_NOTES.md"))
+	for _, required := range []string{
+		"consumer compatibility evidence",
+		"Runtime behavior, storage compatibility, and security were not assessed",
+		"Deployment compatibility is unknown",
+		"Demand and adoption are unvalidated",
+	} {
+		if !strings.Contains(notes, required) {
+			t.Errorf("release notes missing %q", required)
+		}
+	}
+	for _, forbidden := range []string{"universally compatible", "ABI safe", "non-breaking"} {
+		if strings.Contains(notes, forbidden) {
+			t.Errorf("release notes contain forbidden claim %q", forbidden)
+		}
+	}
 }
 
 func Test_Release_assets_and_checksums_are_exact(t *testing.T) {
