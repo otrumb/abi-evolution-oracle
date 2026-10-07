@@ -2,6 +2,7 @@ package policy_test
 
 import (
 	"bufio"
+	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -101,6 +102,35 @@ func Test_Release_assets_and_checksums_are_exact(t *testing.T) {
 		if !strings.Contains(script, required) {
 			t.Errorf("packager missing %q", required)
 		}
+	}
+}
+
+func Test_Publication_authorization_is_explicit_and_bounded(t *testing.T) {
+	root := repositoryRoot(t)
+	data := readFile(t, filepath.Join(root, "docs", "publication-authorization.json"))
+	var receipt struct {
+		Schema      int      `json:"schema"`
+		State       string   `json:"state"`
+		ClosureHead string   `json:"closure_head"`
+		Allowed     []string `json:"allowed_public_mutations"`
+		Forbidden   []string `json:"still_forbidden"`
+	}
+	if err := json.Unmarshal([]byte(data), &receipt); err != nil {
+		t.Fatal(err)
+	}
+	if receipt.Schema != 1 || receipt.State != "user_authorized" {
+		t.Fatalf("invalid publication authorization: schema=%d state=%q", receipt.Schema, receipt.State)
+	}
+	if receipt.ClosureHead != "c7e9ca7a0a0cede919f3036df27625bbed0e76ff" {
+		t.Fatalf("unexpected closure head %q", receipt.ClosureHead)
+	}
+	wantAllowed := []string{"create_public_repository", "push_main", "push_v0.1.0_tag", "publish_v0.1.0_release"}
+	if strings.Join(receipt.Allowed, "\n") != strings.Join(wantAllowed, "\n") {
+		t.Fatalf("unexpected allowed mutations: %v", receipt.Allowed)
+	}
+	wantForbidden := []string{"contact_maintainers", "claim_adoption", "publish_packages", "rewrite_history"}
+	if strings.Join(receipt.Forbidden, "\n") != strings.Join(wantForbidden, "\n") {
+		t.Fatalf("unexpected forbidden mutations: %v", receipt.Forbidden)
 	}
 }
 

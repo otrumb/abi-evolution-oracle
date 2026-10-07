@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "state": "user_authorized",
+  "closure_head": "c7e9ca7a0a0cede919f3036df27625bbed0e76ff",
+  "allowed_public_mutations": [
+    "create_public_repository",
+    "push_main",
+    "push_v0.1.0_tag",
+    "publish_v0.1.0_release"
+  ],
+  "still_forbidden": [
+    "contact_maintainers",
+    "claim_adoption",
+    "publish_packages",
+    "rewrite_history"
+  ]
+}
