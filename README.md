@@ -5,7 +5,52 @@ Ethereum ABI consumer compatibility across frozen old/new ABI pairs. It executes
 go-ethereum decoding, `abigen` source generation and compilation, event layout
 probes, collision handling, structural controls, and a pinned `abidiff` baseline.
 
-## Scope
+## Bounded evidence, not deployment advice
+
+Reports consumer compatibility evidence only for tested corpus,
+consumers, versions, and configurations. Runtime behavior, storage compatibility,
+and security are not assessed. Deployment compatibility is unknown. Demand and
+adoption are unvalidated. Results must not be generalized into universal
+safe/breaking claims.
+
+## Problem this solves
+
+ABI changes can affect decoding, generated Go bindings, and event layouts
+differently. Use the frozen cases to inspect those consumer-specific results
+and recompute the recorded experiment's score.
+
+## Install v0.1.0
+
+```bash
+go install github.com/otrumb/abi-evolution-oracle/cmd/abi-evolution-oracle@v0.1.0
+```
+
+For a pinned source checkout:
+
+```bash
+export GOTOOLCHAIN=local
+export CGO_ENABLED=0
+go build -trimpath -o abi-evolution-oracle ./cmd/abi-evolution-oracle
+```
+
+PowerShell uses `$env:GOTOOLCHAIN='local'` and `$env:CGO_ENABLED='0'`.
+
+## Minimal verify-corpus and score workflow
+
+From the source checkout's repository root, validate the bundled corpus and
+recompute its recorded score. These commands need no `abigen`, `abidiff`, or RPC:
+
+```bash
+go run ./cmd/abi-evolution-oracle verify-corpus
+go run ./cmd/abi-evolution-oracle score evidence evidence/gates.json
+```
+
+`verify-corpus` validates corpus shape, hashes, provenance, and expectations.
+`score` recomputes `evidence/score.json` from checked-in observations, baseline
+records, corpus verification, and gate input. It does not rerun the consumers
+or validate a new ABI pair.
+
+## Experiment scope and internals
 
 The checked-in corpus contains exactly 50 original synthetic cases: 12
 directional, 12 name-only, 12 event, 8 collision, and 6 structural cases. The
@@ -20,42 +65,15 @@ The recorded experiment uses:
 The checked-in evidence reports a technical score of 100/100 for this experiment.
 That score is experiment evidence, not market validation.
 
-**Disclaimer:** Reports consumer compatibility evidence only for tested corpus,
-consumers, versions, and configurations. Runtime behavior, storage compatibility,
-and security are not assessed. Deployment compatibility is unknown. Demand and
-adoption are unvalidated. Results must not be generalized into universal
-safe/breaking claims.
+## Additional commands
 
-## Install and build
+Run from repository root with the supplied tool paths:
 
 ```bash
-go install github.com/otrumb/abi-evolution-oracle/cmd/abi-evolution-oracle@latest
-```
-
-For a pinned source checkout:
-
-```bash
-export GOTOOLCHAIN=local
-export CGO_ENABLED=0
-go build -trimpath -o abi-evolution-oracle ./cmd/abi-evolution-oracle
-```
-
-PowerShell uses `$env:GOTOOLCHAIN='local'` and `$env:CGO_ENABLED='0'`.
-
-## Commands
-
-Run commands from repository root:
-
-```bash
-go run ./cmd/abi-evolution-oracle verify-corpus
-go run ./cmd/abi-evolution-oracle score evidence evidence/gates.json
 go run ./cmd/abi-evolution-oracle probe-one D06 /path/to/abigen
 go run ./cmd/abi-evolution-oracle run /tmp/evidence /path/to/abidiff /path/to/abigen
 ```
 
-- `verify-corpus` validates corpus shape, hashes, provenance, and expectations.
-- `score` recomputes `score.json` from recorded observations, baseline records,
-  corpus verification, and gate input.
 - `probe-one` executes one fixture with a supplied `abigen` v1.15.11 binary.
 - `run` executes all probes and the supplied pinned baseline into a chosen
   evidence directory. It performs no live RPC.
