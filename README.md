@@ -7,7 +7,7 @@ probes, collision handling, structural controls, and a pinned `abidiff` baseline
 
 ## Bounded evidence, not deployment advice
 
-Reports consumer compatibility evidence only for the tested corpus,
+Reports consumer compatibility evidence only for tested corpus,
 consumers, versions, and configurations. Runtime behavior, storage compatibility,
 and security are not assessed. Deployment compatibility is unknown. Demand and
 adoption are unvalidated. Results must not be generalized into universal
